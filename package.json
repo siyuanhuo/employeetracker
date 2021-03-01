@@ -1,0 +1,23 @@
+{
+  "name": "employeetracker",
+  "version": "1.0.0",
+  "description": "* [Installation](#installation)\r * [Usage](#usage)\r * [Demo](#demo)",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siyuanhuo/employeetracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/siyuanhuo/employeetracker/issues"
+  },
+  "homepage": "https://github.com/siyuanhuo/employeetracker#readme",
+  "dependencies": {
+    "inquirer": "^8.0.0"
+  }
+}
