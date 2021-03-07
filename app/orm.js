@@ -20,31 +20,15 @@ function getRoles() {
 
 }
 
-// view employees + view employees by manager
-function getEmoloyees(manager = '') {
+// view all employees
+function getEmoloyees() {
 
 }
 
-// update employee role + manager
+// update employee role
 function updateEmployee(data) {
 
 }
 
 
-function deleteDepartment(data) {
-
-}
-
-function deleteRole(data) {
-
-}
-
-function deleteEmployee(data) {
-
-}
-
-function departmentBudget(data) {
-
-}
-
-module.exports = {addDepartment, addRole, addEmployee, getDepartments, getRoles, getEmoloyees, updateEmployee, deleteDepartment, deleteRole, deleteEmployee, departmentBudget}
+module.exports = {addDepartment, addRole, addEmployee, getDepartments, getRoles, getEmoloyees, updateEmployee}

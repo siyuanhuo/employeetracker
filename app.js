@@ -8,32 +8,91 @@ const questionList = [
   'Add employee',
   'View departments',
   'View roles',
-  'View employees', //view all employee + by manager
-  'Update employee', //update employee role + manager
-  'Delete department',
-  'Delete role',
-  'Delete employee',
-  'View the total uitlized budget of a department',
+  'View all employees',
+  'Update employee role',
   'Exit'
 ]
 
 async function addDepartment() {
-  
+  const data = await inquirer.prompt([
+    {
+      name: 'name',
+      message: 'What is the department\'s name?'
+    }
+  ])
+  orm.addDepartment(data)
 }
 
-async function addRole() {}
+async function addRole() {
+  const departmentList = viewDepartments()
+  const data = await inquirer.prompt([
+    {
+      name: 'title',
+      message: 'What is the title?'
+    },
+    {
+      name: 'salary',
+      type: 'number',
+      message: 'What is the salary?'
+    },
+    {
+      name: 'departmentID',
+      type: 'list',
+      message: 'At which department?',
+      choices: departmentList
+    }
+  ])
+  orm.addRole(data)
+}
 
-async function addEmployee() {}
+async function addEmployee() {
+  const roles = viewRoles()
+  const managers = orm.getManager() //add to orm later
+  const data = await inquirer.prompt([
+    {
+      name: 'firstName',
+      message: 'What is the employee\'s first name?',
+    },
+    {
+      name: 'lastName',
+      message: 'What is the employee\'s last name?'
+    },
+    {
+      name: 'roleID',
+      type: 'list',
+      message: 'What does the employee do?',
+      choices: roles
+    },
+    {
+      name: 'managerID',
+      type: 'list',
+      message: 'Who is the manager of this employee?',
+      choices: managers
+    }
+  ])
+  orm.addEmployee(data)
+}
 
-async function viewDepartments() {}
+async function viewDepartments() {
+  const table = orm.getDepartments()
+  console.table(table)
+}
 
-async function viewRoles() {}
+async function viewRoles() {
+  const table = orm.getRoles()
+  console.table(table)
+}
 
 // view all employee + view employee by manager
-async function viewEmployees() {}
+async function viewEmployees() {
+  const table = orm.getEmoloyees(data)
+  console.table(table)
+}
 
 // update employee's role + update employee's manager
-async function updateEmployee() {}
+async function updateEmployee() {
+  const employees = orm.getEmployee({'option': 'View all'})
+}
 
 async function deleteDepartment() {}
 
