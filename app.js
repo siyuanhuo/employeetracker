@@ -20,11 +20,16 @@ async function addDepartment() {
       message: 'What is the department\'s name?'
     }
   ])
-  orm.addDepartment(data)
+  await orm.addDepartment(data)
+  console.log(`Department '${data.name}' added to database.`)
 }
 
 async function addRole() {
-  const departmentList = viewDepartments()
+  const rawList = await orm.getDepartments()
+  let departmentList = []
+  rawList.forEach(element => {
+    departmentList.push(element.name)
+  })
   const data = await inquirer.prompt([
     {
       name: 'title',
@@ -36,18 +41,31 @@ async function addRole() {
       message: 'What is the salary?'
     },
     {
-      name: 'departmentID',
+      name: 'department',
       type: 'list',
       message: 'At which department?',
       choices: departmentList
     }
   ])
-  orm.addRole(data)
+  await orm.addRole(data)
+  console.log(`Role '${data.department}' added to database`)
 }
 
 async function addEmployee() {
-  const roles = viewRoles()
-  const managers = orm.getManager() //add to orm later
+  const rawRoles = await orm.getRoles()
+  const roles = []
+  rawRoles.forEach(element => {
+    roles.push(element.title)
+  })
+
+  const rawEmployee = await orm.getEmployees()
+  const manager = []
+  rawEmployee.forEach(element => {
+    if(element.first_name || element.last_name){
+      manager.push(element.first_name + ' ' + element.last_name)
+    }
+  })
+  if (manager.length == 0) manager.push('No manager')
   const data = await inquirer.prompt([
     {
       name: 'firstName',
@@ -58,101 +76,87 @@ async function addEmployee() {
       message: 'What is the employee\'s last name?'
     },
     {
-      name: 'roleID',
+      name: 'role',
       type: 'list',
       message: 'What does the employee do?',
       choices: roles
     },
     {
-      name: 'managerID',
+      name: 'manager',
       type: 'list',
-      message: 'Who is the manager of this employee?',
-      choices: managers
+      message: 'Who is the manager?',
+      choices: manager
     }
   ])
-  orm.addEmployee(data)
+  await orm.addEmployee(data)
+  console.log(`Employee '${data.firstName} ${data.lastName}' added to database`)
 }
 
 async function viewDepartments() {
-  const table = orm.getDepartments()
+  const table = await orm.getDepartments()
   console.table(table)
 }
 
 async function viewRoles() {
-  const table = orm.getRoles()
+  const table = await orm.getRoles()
   console.table(table)
 }
 
-// view all employee + view employee by manager
+// view all employee
 async function viewEmployees() {
-  const table = orm.getEmoloyees(data)
+  const table = await orm.getEmoloyees(data)
   console.table(table)
 }
 
-// update employee's role + update employee's manager
+// update employee's role
 async function updateEmployee() {
-  const employees = orm.getEmployee({'option': 'View all'})
+  const rawEmployee = await orm.getEmployees()
+  const rawRole = await orm.getRoles()
+  const data = await inquirer.prompt([
+    {
+      name: 'employee',
+      message: 'Who do you want to edit?'
+    },
+    {
+      name: 'role',
+      type: 'list',
+      message: 'What is the new title of this employee?',
+      choices: ['a','b']
+    }
+  ])
+
 }
 
-async function deleteDepartment() {}
-
-async function deleteRole() {}
-
-async function deleteEmployee() {}
-
-async function departmentBudget() {}
-
-
-function processOption(option) {
+async function processOption(option) {
   switch(option) {
     case 'Add department':
-      addDepartment()
-      break
+      await addDepartment()
+      break;
     case 'Add role':
-      addRole()
-      break
+      await addRole()
+      break;
     case 'Add employee':
-      addEmployee()
-      break
+      await addEmployee()
+      break;
     case 'View departments':
-      viewDepartments()
-      break
+      await viewDepartments()
+      break;
     case 'View roles':
-      viewRoles()
-      break
-    case 'View employees':
-      viewEmployees()
-      break
-    case 'Update employee':
-      updateEmployee()
-      break
-    case 'Delete department':
-      deleteDepartment()
-      break
-    case 'Delete role':
-      deleteRole()
-      break
-    case 'Delete employee':
-      deleteEmployee()
-      break
-    case 'View the total uitlized budget of a department':
-      departmentBudget()
-      break
+      await viewRoles()
+      break;
+    case 'View all employees':
+      await viewEmployees()
+      break;
+    case 'Update employee role':
+      await updateEmployee()
+      break;
     default:
       break
   }
 }
 
 async function main() {
-  let next = await inquirer.prompt([
-    {
-      name: 'continue',
-      type: 'confirm',
-      message: 'Welcome to employee tracker. \n Would you like to continue?'
-    }
-  ])
-
-  while (next.continue) {
+  while (true) {
     let rawOption = await inquirer.prompt([
       {
         name: 'option',
@@ -165,8 +169,10 @@ async function main() {
     if(option == 'Exit') {
       console.log('Have a nice day')
       break
+    } else {
+      await processOption(option)
     }
-    processOption(option)
+    
   }
 }
 
