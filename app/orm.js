@@ -23,11 +23,11 @@ async function addEmployee(data) {
   const titleID = await db.query(`select id from role where (title='${title}')`).then(ans => {
     return ans[0].id
   })
-  const managerID = null
+  let managerID = null
   if(manager != 'No manager') {
-    const [first, last] = manager.splice(' ')
+    const [first, last] = manager.split(' ')
     managerID = await db.query(
-      `select id from employee where (first_name='${first}', last_name='${last}')`)
+      `select id from employee where (first_name='${first}' and last_name='${last}')`).then(ans => { return ans[0].id })
   }
   await db.query(
     `insert into employee (first_name, last_name, role_id, manager_id)
