@@ -51,7 +51,16 @@ async function getEmployees() {
 
 // update employee role
 async function updateEmployee(data) {
-
+  const fullName = data.name.split(' ');
+  const newTitle = data.role
+  const firstName = fullName[0]
+  const lastName = fullName[1]
+  const role = await db.query(
+    `select id from role where title='${newTitle}'`)
+  const roleID = role[0].id
+  console.log(roleID)
+  await db.query(
+    `update employee set role_id=${roleID} where (first_name='${firstName}' and last_name='${lastName}')`)
 }
 
 

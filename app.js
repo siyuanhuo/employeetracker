@@ -59,13 +59,12 @@ async function addEmployee() {
   })
 
   const rawEmployee = await orm.getEmployees()
-  const manager = []
+  const manager = ['No manager']
   rawEmployee.forEach(element => {
     if(element.first_name || element.last_name){
       manager.push(element.first_name + ' ' + element.last_name)
     }
   })
-  if (manager.length == 0) manager.push('No manager')
   const data = await inquirer.prompt([
     {
       name: 'firstName',
@@ -94,37 +93,53 @@ async function addEmployee() {
 
 async function viewDepartments() {
   const table = await orm.getDepartments()
+  console.log('All Departments shows below:')
   console.table(table)
 }
 
 async function viewRoles() {
   const table = await orm.getRoles()
+  console.log('All roles shows below:')
   console.table(table)
 }
 
 // view all employee
 async function viewEmployees() {
-  const table = await orm.getEmoloyees(data)
+  const table = await orm.getEmployees()
+  console.log('All employees shows below:')
   console.table(table)
 }
 
 // update employee's role
 async function updateEmployee() {
   const rawEmployee = await orm.getEmployees()
+  const employeeList = []
+  rawEmployee.forEach(element => {
+    employeeList.push(`${element.first_name} ${element.last_name}`)
+  })
+
   const rawRole = await orm.getRoles()
+  const roleList = []
+  rawRole.forEach(element => {
+    roleList.push(element.title)
+  })
+
   const data = await inquirer.prompt([
     {
-      name: 'employee',
-      message: 'Who do you want to edit?'
+      name: 'name',
+      type: 'list',
+      message: 'Who do you want to edit?',
+      choices: employeeList
     },
     {
       name: 'role',
       type: 'list',
       message: 'What is the new title of this employee?',
-      choices: ['a','b']
+      choices: roleList
     }
   ])
 
+  await orm.updateEmployee(data)
 }
 
 async function processOption(option) {
@@ -168,11 +183,10 @@ async function main() {
     let option = rawOption.option
     if(option == 'Exit') {
       console.log('Have a nice day')
-      break
+      return true
     } else {
       await processOption(option)
     }
-    
   }
 }
 
